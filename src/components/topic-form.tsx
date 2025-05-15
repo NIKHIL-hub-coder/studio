@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -13,7 +14,27 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Search, Loader2 } from "lucide-react";
+import { Search, Loader2,Languages } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+const supportedLanguages = [
+  { code: "en", name: "English" },
+  { code: "es", name: "Spanish" },
+  { code: "fr", name: "French" },
+  { code: "de", name: "German" },
+  { code: "zh", name: "Chinese" },
+  { code: "ja", name: "Japanese" },
+  { code: "ar", name: "Arabic" },
+  { code: "hi", name: "Hindi" },
+  { code: "pt", name: "Portuguese" },
+  { code: "ru", name: "Russian" },
+];
 
 const formSchema = z.object({
   topic: z.string().min(2, {
@@ -21,6 +42,7 @@ const formSchema = z.object({
   }),
   source: z.string().optional(),
   count: z.coerce.number().min(1).max(10).optional().default(3),
+  language: z.string().optional().default("en"),
 });
 
 export type TopicFormValues = z.infer<typeof formSchema>;
@@ -37,6 +59,7 @@ export function TopicForm({ onSubmit, isLoading }: TopicFormProps) {
       topic: "",
       source: "",
       count: 3,
+      language: "en",
     },
   });
 
@@ -63,7 +86,7 @@ export function TopicForm({ onSubmit, isLoading }: TopicFormProps) {
             <FormItem>
               <FormLabel>Source (Optional)</FormLabel>
               <FormControl>
-                <Input placeholder="e.g., bbc.com" {...field} />
+                <Input placeholder="e.g., bbc.com, reuters.com" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -78,6 +101,32 @@ export function TopicForm({ onSubmit, isLoading }: TopicFormProps) {
               <FormControl>
                 <Input type="number" min="1" max="10" {...field} />
               </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="language"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="flex items-center">
+                <Languages className="mr-2 h-4 w-4" /> Language
+              </FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select language" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {supportedLanguages.map((lang) => (
+                    <SelectItem key={lang.code} value={lang.code}>
+                      {lang.name} ({lang.code.toUpperCase()})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <FormMessage />
             </FormItem>
           )}

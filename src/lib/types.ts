@@ -1,7 +1,9 @@
+
 export interface FetchedArticle {
   title: string;
   url: string;
   summary: string; // Original summary from fetchNewsArticles
+  imageUrl?: string; // Optional image URL from fetchNewsArticles
 }
 
 export interface NewsArticleData extends FetchedArticle {

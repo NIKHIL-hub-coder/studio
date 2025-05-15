@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { NextPage } from "next";
@@ -13,30 +14,34 @@ import { useToast } from "@/hooks/use-toast";
 const Home: NextPage = () => {
   const [articles, setArticles] = useState<NewsArticleData[]>([]);
   const [isLoadingTopic, setIsLoadingTopic] = useState(false);
+  const [requestedLanguage, setRequestedLanguage] = useState<string | undefined>("en");
   const { toast } = useToast();
 
   const handleTopicSubmit = async (values: TopicFormValues) => {
     setIsLoadingTopic(true);
     setArticles([]); // Clear previous articles
+    setRequestedLanguage(values.language || "en");
 
     try {
       const fetchedArticles = await fetchNewsArticles({
         topic: values.topic,
         source: values.source || undefined,
         count: values.count,
+        language: values.language || undefined,
       });
 
       if (fetchedArticles.length === 0) {
         toast({
           title: "No Articles Found",
-          description: "Try a different topic or source.",
+          description: "Try a different topic, source, or broaden your search.",
+          variant: "default",
         });
       }
 
       setArticles(
         fetchedArticles.map((article: FetchedArticle) => ({
           ...article,
-          id: article.url, // Use URL as a unique ID
+          id: article.url + Date.now(), // Ensure unique ID if URL is repeated across fetches
           isLoadingSummary: true,
         }))
       );
@@ -54,12 +59,14 @@ const Home: NextPage = () => {
   };
 
   const processArticleSummaries = useCallback(async () => {
-    for (let i = 0; i < articles.length; i++) {
-      const article = articles[i];
-      if (article.isLoadingSummary && !article.contextualSummary && !article.error) {
+    // Create a new array to map over to avoid issues with state updates during the loop
+    const articlesToProcess = articles.filter(a => a.isLoadingSummary && !a.contextualSummary && !a.error);
+
+    for (const article of articlesToProcess) {
         try {
           const summaryResult = await summarizeArticle({
-            articleContent: `${article.title}\n\n${article.originalSummary}`,
+            articleContent: `${article.title}\n\n${article.summary}`, // Use originalSummary here
+            language: requestedLanguage,
           });
           setArticles((prevArticles) =>
             prevArticles.map((prevArticle) =>
@@ -89,8 +96,7 @@ const Home: NextPage = () => {
           );
         }
       }
-    }
-  }, [articles]);
+  }, [articles, requestedLanguage]);
 
 
   useEffect(() => {

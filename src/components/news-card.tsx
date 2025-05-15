@@ -1,3 +1,4 @@
+
 "use client";
 
 import Image from "next/image";
@@ -12,30 +13,55 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import type { NewsArticleData } from "@/lib/types";
-import { ExternalLink, Tags, Lightbulb, AlertTriangle, Loader2 } from "lucide-react";
+import { ExternalLink, Tags, Lightbulb, AlertTriangle, Loader2, ImageOff } from "lucide-react";
 import { ScrollArea } from "./ui/scroll-area";
+import { useState, useEffect } from 'react';
+
 
 interface NewsCardProps {
   article: NewsArticleData;
 }
 
 export function NewsCard({ article }: NewsCardProps) {
+  const [imageSrc, setImageSrc] = useState(article.imageUrl || `https://placehold.co/600x300.png?text=News&random=${article.id}`);
+  const [imageError, setImageError] = useState(false);
+
+  useEffect(() => {
+    setImageError(false);
+    setImageSrc(article.imageUrl || `https://placehold.co/600x300.png?text=News&random=${article.id}`);
+  }, [article.imageUrl, article.id]);
+
+  const handleImageError = () => {
+    setImageError(true);
+    setImageSrc(`https://placehold.co/600x300.png?text=Image+Not+Found&random=${article.id}`);
+  };
+
+
   return (
     <Card className="flex flex-col h-full shadow-lg hover:shadow-xl transition-shadow duration-300">
       <CardHeader>
-        <Image
-          src={`https://placehold.co/600x300.png?random=${article.id}`}
-          alt={article.title}
-          width={600}
-          height={300}
-          className="rounded-t-lg object-cover w-full aspect-[2/1]"
-          data-ai-hint="news article"
-        />
+        {imageError ? (
+          <div className="rounded-t-lg w-full aspect-[2/1] bg-muted flex flex-col items-center justify-center text-muted-foreground">
+            <ImageOff className="w-12 h-12 mb-2" />
+            <p className="text-sm">Image not available</p>
+          </div>
+        ) : (
+          <Image
+            src={imageSrc}
+            alt={article.title}
+            width={600}
+            height={300}
+            className="rounded-t-lg object-cover w-full aspect-[2/1]"
+            data-ai-hint="news article"
+            onError={handleImageError}
+            priority={false} // Set to true for LCP images, false for others
+          />
+        )}
         <CardTitle className="mt-4 text-xl leading-tight">
           {article.title}
         </CardTitle>
         <CardDescription className="text-xs text-muted-foreground pt-1">
-          Source: {new URL(article.url).hostname}
+          Source: {article.url ? new URL(article.url).hostname : 'Unknown source'}
         </CardDescription>
       </CardHeader>
       <CardContent className="flex-grow space-y-3">
