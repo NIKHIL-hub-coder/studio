@@ -56,8 +56,8 @@ const fetchNewsArticlePrompt = ai.definePrompt({
   3.  "summary": A concise summary of the news article. If the original article does not have a summary, create one.
   4.  "imageUrl": A publicly accessible URL for a relevant image for the article.
       - **Strongly prioritize images hosted on the same domain as the article's 'url' if a high-quality, relevant image is available there.**
-      - If a same-domain image isn't suitable or available, provide a URL for a relevant image from another reputable source that directly relates to the article's content.
-      - If no suitable image directly related to the article content can be found after checking these options, you MAY omit the imageUrl or use a generic placeholder image URL (e.g., from placehold.co like https://placehold.co/600x400.png). Do not invent image URLs.
+      - If a same-domain image isn't suitable or available, **you MUST use a generic placeholder image URL from \`https://placehold.co/\` (e.g., https://placehold.co/600x400.png). Do NOT use images from other third-party domains unless it's explicitly the article's primary image hosted on a well-known CDN by the publisher.**
+      - If no suitable image directly related to the article content can be found after checking these options, ensure you use a generic placeholder image URL from \`https://placehold.co/\`. Do not invent image URLs or omit the imageUrl.
 
   Instructions:
   - If a specific source is provided, fetch articles only from that source.
@@ -65,7 +65,7 @@ const fetchNewsArticlePrompt = ai.definePrompt({
   - If you cannot find articles for the exact specified topic, try to find articles for a slightly broader but related topic.
   - If no relevant articles can be found even with a broader interpretation, return an empty array.
   - Prioritize relevance and recency of the articles.
-  - Ensure all fields in the output schema are populated as per the descriptions above (imageUrl can be omitted or be a placeholder if no relevant image is found).
+  - Ensure all fields in the output schema are populated as per the descriptions above.
   - Adhere strictly to the output JSON schema.
   `,
 });
