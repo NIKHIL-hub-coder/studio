@@ -1,7 +1,6 @@
 
 "use client";
 
-import Image from "next/image";
 import {
   Card,
   CardContent,
@@ -28,12 +27,15 @@ export function NewsCard({ article }: NewsCardProps) {
 
   useEffect(() => {
     setImageError(false);
-    setImageSrc(article.imageUrl || `https://placehold.co/600x300.png?text=News&random=${article.id}`);
+    // Ensure placeholder has a unique element to avoid showing same placeholder for multiple cards if AI fails to provide image
+    const placeholderUrl = `https://placehold.co/600x300.png?text=News&c=${encodeURIComponent(article.id.slice(0,10))}`;
+    setImageSrc(article.imageUrl || placeholderUrl);
   }, [article.imageUrl, article.id]);
 
   const handleImageError = () => {
     setImageError(true);
-    setImageSrc(`https://placehold.co/600x300.png?text=Image+Not+Found&random=${article.id}`);
+    // Fallback to a generic placeholder, ensuring uniqueness if needed
+    setImageSrc(`https://placehold.co/600x300.png?text=Image+Not+Found&c=${encodeURIComponent(article.id.slice(0,10))}`);
   };
 
 
@@ -46,15 +48,14 @@ export function NewsCard({ article }: NewsCardProps) {
             <p className="text-sm">Image not available</p>
           </div>
         ) : (
-          <Image
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
             src={imageSrc}
             alt={article.title}
-            width={600}
-            height={300}
             className="rounded-t-lg object-cover w-full aspect-[2/1]"
             data-ai-hint="news article"
             onError={handleImageError}
-            priority={false} // Set to true for LCP images, false for others
+            loading="lazy"
           />
         )}
         <CardTitle className="mt-4 text-xl leading-tight">
