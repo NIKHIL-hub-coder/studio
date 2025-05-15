@@ -46,6 +46,12 @@ const nextConfig: NextConfig = {
         hostname: 'images.patrika.com',
         port: '',
         pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.thehindu.com',
+        port: '',
+        pathname: '/**',
       }
       // Add other common image provider hostnames if needed
       // For example, if your AI often returns images from specific CDNs:
