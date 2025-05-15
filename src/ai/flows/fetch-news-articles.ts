@@ -21,7 +21,7 @@ export type FetchNewsArticlesInput = z.infer<typeof FetchNewsArticlesInputSchema
 
 const NewsArticleSchema = z.object({
   title: z.string().describe('The title of the news article.'),
-  url: z.string().url().describe('The URL of the news article.'),
+  url: z.string().describe('The URL of the news article.'), // Removed .url()
   summary: z.string().describe('A short summary of the news article.'),
 });
 
@@ -64,3 +64,4 @@ const fetchNewsArticlesFlow = ai.defineFlow(
     return output!;
   }
 );
+
