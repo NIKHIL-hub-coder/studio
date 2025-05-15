@@ -22,6 +22,12 @@ const nextConfig: NextConfig = {
         hostname: 'images.livemint.com',
         port: '',
         pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'via.placeholder.com',
+        port: '',
+        pathname: '/**',
       }
       // Add other common image provider hostnames if needed
       // For example, if your AI often returns images from specific CDNs:
